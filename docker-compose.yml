@@ -16,19 +16,19 @@ services:
     image: pixelfed:latest 
     restart: unless-stopped
     ports:
-      - "8080:80" 
+      - "8080:80"
     env_file:
       - ./.env
     volumes:
       - "pixelfed-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
-      - ./.env:/var/www/.env 
+      - ./.env:/var/www/.env
     networks:
       - external
       - internal
 
   db:
-    image: mysql:8.0 
+    image: mysql:8.0
     restart: unless-stopped
     networks:
      - internal
@@ -42,7 +42,7 @@ services:
      - MYSQL_RANDOM_ROOT_PASSWORD=true
 
   worker:
-    image: pixelfed:latest 
+    image: pixelfed:latest
     restart: unless-stopped
     env_file:
       - ./.env
@@ -50,7 +50,7 @@ services:
       - "pixelfed-storage:/var/www/storage"
       - "app-bootstrap:/var/www/bootstrap"
     networks:
-      - external  
+      - external
       - internal
     command: gosu www-data php artisan horizon
 
@@ -62,7 +62,7 @@ services:
     networks:
       - internal
 
-volumes: 
+volumes:
   redis-data:
   app-bootstrap:
   pixelfed-storage:
