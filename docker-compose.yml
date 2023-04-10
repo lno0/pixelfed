@@ -13,70 +13,64 @@ version: '3'
 services:
 ## App and Worker
   app:
-    # Comment to use dockerhub image
-    image: pixelfed/pixelfed:latest
+    image: pixelfed:latest 
     restart: unless-stopped
+    ports:
+      - "8080:80" 
     env_file:
-      - .env.docker
+      - ./.env
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
-      - "./.env.docker:/var/www/.env"
+      - "pixelfed-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
+      - ./.env:/var/www/.env 
     networks:
       - external
       - internal
-    ports:
-      - "8080:80"
-    depends_on:
-      - db
-      - redis
+
+  db:
+    image: mysql:8.0 
+    restart: unless-stopped
+    networks:
+     - internal
+    command: --default-authentication-plugin=mysql_native_password
+    volumes:
+     - db-data:/var/lib/mysql
+    environment:
+     - MYSQL_DATABASE=pixelfed_prod
+     - MYSQL_USER=${DB_USERNAME}
+     - MYSQL_PASSWORD=${DB_PASSWORD}
+     - MYSQL_RANDOM_ROOT_PASSWORD=true
 
   worker:
-    image: pixelfed/pixelfed:latest
+    image: pixelfed:latest 
     restart: unless-stopped
     env_file:
-      - .env.docker
+      - ./.env
     volumes:
-      - app-storage:/var/www/storage
-      - app-bootstrap:/var/www/bootstrap
+      - "pixelfed-storage:/var/www/storage"
+      - "app-bootstrap:/var/www/bootstrap"
     networks:
-      - external
+      - external  
       - internal
     command: gosu www-data php artisan horizon
-    depends_on:
-      - db
-      - redis
-
-## DB and Cache
-  db:
-    image: mariadb:jammy
-    restart: unless-stopped
-    networks:
-      - internal
-    command: --default-authentication-plugin=mysql_native_password
-    env_file:
-      - .env.docker
-    volumes:
-      - "db-data:/var/lib/mysql"
 
   redis:
     image: redis:5-alpine
     restart: unless-stopped
-    env_file:
-      - .env.docker
     volumes:
       - "redis-data:/data"
     networks:
       - internal
 
-volumes:
-  db-data:
+volumes: 
   redis-data:
-  app-storage:
   app-bootstrap:
+  pixelfed-storage:
+  db-data:
 
 networks:
   internal:
     internal: true
   external:
-    driver: bridge
+    external: true
+
