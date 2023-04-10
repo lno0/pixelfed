@@ -56,7 +56,7 @@ DB_HOST=db
 DB_PASSWORD=pixelfed_db_pass
 DB_PORT=3306
 DB_USERNAME=pixelfed
-# pass the same values to the db itself
+# Pass the same values as above
 MYSQL_DATABASE=pixelfed_prod
 MYSQL_PASSWORD=pixelfed_db_pass
 MYSQL_RANDOM_ROOT_PASSWORD=true
