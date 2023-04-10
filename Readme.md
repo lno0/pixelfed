@@ -134,4 +134,4 @@ docker compose exec app php artisan config:cache
 ```
 
 The only thing left to do on the server side is setup Nginx and create a user. 
-
+(to be added soon)
