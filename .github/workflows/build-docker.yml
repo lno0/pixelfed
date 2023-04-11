@@ -11,8 +11,8 @@ on:
   pull_request:
     paths:
       - .github/workflows/build-docker.yml
-      - contrib/docker/Dockerfile.apache
-      - contrib/docker/Dockerfile.fpm
+      - .Dockerfile
+
 permissions:
   contents: read
 
