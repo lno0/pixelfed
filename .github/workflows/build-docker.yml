@@ -38,7 +38,6 @@ jobs:
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
-        secrets: inherit
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -46,7 +45,6 @@ jobs:
 
       - name: Fetch tags
         uses: docker/metadata-action@v4
-        secrets: inherit
         id: meta
         with:
           images: ${{ secrets.DOCKER_HUB_ORGANISATION }}/pixelfed
@@ -63,7 +61,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          file: contrib/docker/Dockerfile.apache
+          file: Dockerfile
           platforms: linux/amd64,linux/arm64
           builder: ${{ steps.buildx.outputs.name }}
           push: ${{ github.event_name != 'pull_request' }}
@@ -92,7 +90,6 @@ jobs:
 
       - name: Login to DockerHub
         uses: docker/login-action@v2
-        secrets: inherit
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_TOKEN }}
@@ -100,10 +97,9 @@ jobs:
 
       - name: Fetch tags
         uses: docker/metadata-action@v4
-        secrets: inherit
         id: meta
         with:
-          images: ${{ secrets.DOCKER_HUB_ORGANISATION }}/pixelfed
+          images: ${{ secrets.DOCKER_HUB_USERNAME }}/pixelfed
           flavor: |
             suffix=-fpm
           tags: |
@@ -111,15 +107,3 @@ jobs:
             type=pep440,pattern={{raw}}
             type=pep440,pattern=v{{major}}.{{minor}}
             type=ref,event=pr
-
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v3
-        with:
-          context: .
-          file: contrib/docker/Dockerfile.fpm
-          platforms: linux/amd64,linux/arm64
-          builder: ${{ steps.buildx.outputs.name }}
-          push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
